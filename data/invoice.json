@@ -1,0 +1,14 @@
+{
+    "number": "12345",
+    "date": "2024-06-28",
+    "products": [
+      { "name": "Product 1", "price": 50, "quantity": 2 },
+      { "name": "Product 2", "price": 30, "quantity": 1 },
+      { "name": "Product 2", "price": 30, "quantity": 1 },
+      { "name": "Product 2", "price": 30, "quantity": 1 },
+      { "name": "Product 2", "price": 30, "quantity": 1 },
+      { "name": "Product 2", "price": 30, "quantity": 1 }
+
+    ]
+  }
+  

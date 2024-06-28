@@ -29,7 +29,7 @@ app.get("/pdf", async (req, res) => {
     res.send(pdf);
 
     //! For download the PDF 
-    // res.setHeader("Content-Disposition", "attachment; filename=123.pdf")
+    // res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf")
     // res.setHeader('Content-Type', 'application/pdf');
     // res.send(pdf)
 });

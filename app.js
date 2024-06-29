@@ -19,8 +19,46 @@ app.get("/pdf", async (req, res) => {
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
+
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle0" });
+
+    const contentSize = await page.evaluate(() => {
+        const body = document.body;
+        const width = body.scrollWidth;
+        const height = body.scrollHeight;
+        return { width, height };
+    });
+
+    if (contentSize.height < 1100) {
+        await page.evaluate(() => {
+            const body = document.body;
+            const fullHeight = 1100;
+            body.style.height = `${fullHeight}px`;
+        });
+    }
+
+    const result = await page.evaluate(() => {
+        const body = document.body;
+        const width = body.scrollWidth;
+        const height = body.scrollHeight;
+        return { width, height };
+    });
+    console.log(`Content Size (px): Width: ${result.width}, Height: ${result.height}}`);
+
+    // // Convert pixels to millimeters (1 inch = 25.4 mm, 1 inch = 96 pixels)
+    // const pixelToMm = 25.4 / 96;
+    // const contentWidthMm = contentSize.width * pixelToMm;
+    // const contentHeightMm = contentSize.height * pixelToMm;
+
+    // // Log content size in millimeters
+    // console.log(`Content Size (mm): Width: ${contentWidthMm.toFixed(2)}, Height: ${contentHeightMm.toFixed(2)}`);
+
+    // if (contentHeightMm.toFixed(2) < 297) {
+    //     const fullHeight = contentHeightMm.toFixed(2) + (297 - contentHeightMm.toFixed(2));
+
+    // }
+    // Generate PDF and close browser
     const pdf = await page.pdf({ format: "A4", printBackground: true });
     await browser.close();
 
@@ -28,7 +66,7 @@ app.get("/pdf", async (req, res) => {
     res.contentType("application/pdf");
     res.send(pdf);
 
-    //! For download the PDF 
+    //! For download the PDF
     // res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf")
     // res.setHeader('Content-Type', 'application/pdf');
     // res.send(pdf)
@@ -37,5 +75,3 @@ app.get("/pdf", async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
 });
-
-

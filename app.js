@@ -30,13 +30,17 @@ app.get("/pdf", async (req, res) => {
         return { width, height };
     });
 
-    if (contentSize.height < 1100) {
-        await page.evaluate(() => {
-            const body = document.body;
-            const fullHeight = 1100;
-            body.style.height = `${fullHeight}px`;
-        });
-    }
+    await page.evaluate((contentSize) => {
+        const body = document.body;
+        const minHeight = 1100;
+        if (contentSize.height < minHeight) {
+            body.style.height = `${minHeight}px`;
+        } else if (contentSize.height > minHeight) {
+            const finalHeight = 1100 - (contentSize.height - 1100);
+
+            body.style.height = `${finalHeight + 1100}px`;
+        }
+    }, contentSize);
 
     const result = await page.evaluate(() => {
         const body = document.body;
@@ -44,7 +48,7 @@ app.get("/pdf", async (req, res) => {
         const height = body.scrollHeight;
         return { width, height };
     });
-    console.log(`Content Size (px): Width: ${result.width}, Height: ${result.height}}`);
+    console.log(`Content Size (px): Width: ${result.width}, Height: ${result.height}`);
 
     // // Convert pixels to millimeters (1 inch = 25.4 mm, 1 inch = 96 pixels)
     // const pixelToMm = 25.4 / 96;
@@ -59,7 +63,10 @@ app.get("/pdf", async (req, res) => {
 
     // }
     // Generate PDF and close browser
-    const pdf = await page.pdf({ format: "A4", printBackground: true });
+    const pdf = await page.pdf({
+        format: "A4",
+        printBackground: true,
+    });
     await browser.close();
 
     // Set response headers

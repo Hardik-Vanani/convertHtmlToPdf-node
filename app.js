@@ -14,7 +14,7 @@ app.get("/pdf", async (req, res) => {
     // Render EJS template
     const html = await ejs.renderFile(path.join(__dirname, "views", "invoice.ejs"), { invoice: invoiceData });
 
-    // Launch Puppeteer and generate PDF
+    // Launch Puppeteer and create new page
     const browser = await puppeteer.launch({
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -29,16 +29,18 @@ app.get("/pdf", async (req, res) => {
         const height = body.scrollHeight;
         return { width, height };
     });
+    console.log(`Content Size (px): Width: ${contentSize.width}, Height: ${contentSize.height}`);
 
     await page.evaluate((contentSize) => {
         const body = document.body;
-        const minHeight = 1100;
-        if (contentSize.height < minHeight) {
-            body.style.height = `${minHeight}px`;
-        } else if (contentSize.height > minHeight) {
-            const finalHeight = 1100 - (contentSize.height - 1100);
+        const maxHeight = 1100;
 
-            body.style.height = `${finalHeight + 1100}px`;
+        if (contentSize.height < maxHeight) {
+            body.style.height = ` ${maxHeight}px`;
+        } else if (contentSize.height > maxHeight) {
+            const finalHeight = Math.ceil(contentSize.height / maxHeight) * 1100;
+
+            body.style.height = ` ${finalHeight}px`;
         }
     }, contentSize);
 
@@ -50,25 +52,11 @@ app.get("/pdf", async (req, res) => {
     });
     console.log(`Content Size (px): Width: ${result.width}, Height: ${result.height}`);
 
-    // // Convert pixels to millimeters (1 inch = 25.4 mm, 1 inch = 96 pixels)
-    // const pixelToMm = 25.4 / 96;
-    // const contentWidthMm = contentSize.width * pixelToMm;
-    // const contentHeightMm = contentSize.height * pixelToMm;
-
-    // // Log content size in millimeters
-    // console.log(`Content Size (mm): Width: ${contentWidthMm.toFixed(2)}, Height: ${contentHeightMm.toFixed(2)}`);
-
-    // if (contentHeightMm.toFixed(2) < 297) {
-    //     const fullHeight = contentHeightMm.toFixed(2) + (297 - contentHeightMm.toFixed(2));
-
-    // }
     // Generate PDF and close browser
     const pdf = await page.pdf({
         format: "A4",
-        printBackground: true,
     });
     await browser.close();
-
     // Set response headers
     res.contentType("application/pdf");
     res.send(pdf);

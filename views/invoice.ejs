@@ -1,78 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Invoice</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                border: 1px solid #8d8d8d;
-            }
-            .invoice-box {
-                max-width: 800px;    
-                margin: auto;
-                padding: 30px;
-                padding-bottom: 15px;
-            }
-            table {
-                width: 100%;
-                line-height: inherit;
-                text-align: left;
-            }
-            table td {
-                padding: 5px;
-                vertical-align: top;
-            }
-            .heading {
-                background: #eee;
-                border-bottom: 1px solid #ddd;
-                font-weight: bold;
-            }
-            .details {
-                padding-bottom: 20px;
-            }
-            .item {
-                border-bottom: 1px solid #eee;
-            }
-            .total {
-                font-weight: bold;
-            }
-        </style>
-    </head>
-    <body class="main-page">
-        <div class="invoice-box">
-            <table>
-                <tr class="top">
-                    <td colspan="4">
-                        <table>
-                            <tr>
-                                <td class="title">
-                                    <h2>Invoice</h2>
-                                </td>
-                                <td>
-                                    Invoice #: <%= invoice.number %><br />
-                                    Created: <%= invoice.date %><br />
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr class="heading">
-                    <td>Product</td>
-                    <td>Price</td>
-                    <td>Quantity</td>
-                    <td>Price</td>
-                </tr>
-                <% invoice.products.forEach(product => { %>
-                <tr class="item">
-                    <td><%= product.name %></td>
-                    <td><%= product.price %></td>
-                    <td><%= product.quantity %></td>
-                    <td><%= product.price * product.quantity %></td>
-                </tr>
-                <% }); %>
-            </table>
-        </div>
-    </body>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            border: 1px solid black;
+        }
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            padding-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+            /* border-collapse: collapse; */
+        }
+        table td {
+            padding: 5px;
+            vertical-align: top;
+        }
+        .heading {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .details {
+            padding-bottom: 20px;
+        }
+        .item {
+            border-bottom: 1px solid #eee;
+        }
+        .total {
+            font-weight: bold;
+        }
+        .product-name {
+            width: 40%; /* Fixed width for the product name column */
+            white-space: normal;
+        }
+        
+    </style>
+</head>
+<body class="main-page">
+    <div class="invoice-box">
+        <table>
+            <tr class="top">
+                <td colspan="4">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <h2>Invoice</h2>
+                            </td>
+                            <td>
+                                Invoice #: <%= invoice.number %><br />
+                                Created: <%= invoice.date %><br />
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="heading">
+                <td class="product-name">Product</td>
+                <td>Price</td>
+                <td>Quantity</td>
+                <td>Total</td>
+            </tr>
+            <% invoice.products.forEach(product => { %>
+            <tr class="item">
+                <td class="product-name"><%= product.name %></td>
+                <td><%= product.price %></td>
+                <td><%= product.quantity %></td>
+                <td><%= product.price * product.quantity %></td>
+            </tr>
+            <% }); %>
+        </table>
+    </div>
+</body>
 </html>
